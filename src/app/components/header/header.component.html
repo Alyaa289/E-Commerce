@@ -1,0 +1,80 @@
+<nav class="navbar navbar-expand-lg navbar-dark modern-navbar">
+  <div class="container">
+    <a class="navbar-brand brand-text" [routerLink]="['/home']">
+      <span class="brand-name">Alyaa Store</span>
+      <span class="brand-tagline">Premium Products</span>
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div
+      class="collapse navbar-collapse"
+      id="navbarNavDropdown"
+    >
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item">
+          <a
+            class="nav-link nav-link-modern"
+            [routerLink]="['/home']"
+            [routerLinkActive]="'active-link'"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >Home</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link nav-link-modern"
+            [routerLink]="['/products']"
+            [routerLinkActive]="'active-link'"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >Products</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link nav-link-modern"
+            [routerLink]="['/products/0/edit']"
+            [routerLinkActive]="'active-link'"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >Add Product</a
+          >
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle nav-link-modern"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Account
+          </a>
+          <ul class="dropdown-menu modern-dropdown">
+            <li>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/login']"
+                >Login</a
+              >
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/register']"
+                >Register</a
+              >
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

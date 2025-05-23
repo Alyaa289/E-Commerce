@@ -1,0 +1,277 @@
+<div class="product-form-container">
+  <div class="container">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb-nav">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/home']">
+            <i class="bi bi-house-fill"></i>
+            Home
+          </a>
+        </li>
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/products']">Products</a>
+        </li>
+        <li class="breadcrumb-item active">{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</li>
+      </ol>
+    </nav>
+
+    <!-- Form Card -->
+    <div class="form-card">
+      <div class="form-header">
+        <div class="header-icon">
+          <i [class]="isEditMode ? 'bi bi-pencil-square' : 'bi bi-plus-circle-fill'"></i>
+        </div>
+        <h1 class="form-title">{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h1>
+        <p class="form-subtitle">{{ isEditMode ? 'Update product information' : 'Create a new product for your store' }}</p>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="product-form">
+        <div class="row">
+          <!-- Product Image Section -->
+          <div class="col-lg-4 col-md-5">
+            <div class="image-upload-section">
+              <h3 class="section-title">Product Image</h3>
+
+              <div class="image-preview">
+                <img [src]="productData.img || defaultImage" [alt]="productData.name || 'Product Image'" class="preview-img">
+                <div class="image-overlay">
+                  <button type="button" class="upload-btn" (click)="triggerFileInput()">
+                    <i class="bi bi-camera-fill"></i>
+                    Change Image
+                  </button>
+                </div>
+              </div>
+
+              <input type="file" #fileInput (change)="onImageSelected($event)" accept="image/*" class="file-input" hidden>
+
+              <div class="image-url-input">
+                <label for="imageUrl" class="form-label">
+                  <i class="bi bi-link-45deg"></i>
+                  Image URL
+                </label>
+                <input
+                  type="url"
+                  id="imageUrl"
+                  name="imageUrl"
+                  [(ngModel)]="productData.img"
+                  class="form-control modern-input"
+                  placeholder="https://example.com/image.jpg"
+                >
+                <small class="form-text">Enter a direct link to the product image</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Information Section -->
+          <div class="col-lg-8 col-md-7">
+            <div class="product-info-section">
+              <h3 class="section-title">Product Information</h3>
+
+              <div class="form-grid">
+                <!-- Product Name -->
+                <div class="form-group">
+                  <label for="productName" class="form-label">
+                    <i class="bi bi-tag-fill"></i>
+                    Product Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="productName"
+                    name="productName"
+                    [(ngModel)]="productData.name"
+                    class="form-control modern-input"
+                    placeholder="Enter product name"
+                    required
+                    minlength="2"
+                    #productName="ngModel"
+                  >
+                  <div *ngIf="productName.invalid && productName.touched" class="error-message">
+                    <small *ngIf="productName.errors?.['required']">Product name is required</small>
+                    <small *ngIf="productName.errors?.['minlength']">Product name must be at least 2 characters</small>
+                  </div>
+                </div>
+
+                <!-- Product Price -->
+                <div class="form-group">
+                  <label for="productPrice" class="form-label">
+                    <i class="bi bi-currency-dollar"></i>
+                    Price *
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      id="productPrice"
+                      name="productPrice"
+                      [(ngModel)]="productData.price"
+                      class="form-control modern-input"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      required
+                      #productPrice="ngModel"
+                    >
+                  </div>
+                  <div *ngIf="productPrice.invalid && productPrice.touched" class="error-message">
+                    <small *ngIf="productPrice.errors?.['required']">Price is required</small>
+                    <small *ngIf="productPrice.errors?.['min']">Price must be greater than 0</small>
+                  </div>
+                </div>
+
+                <!-- Product Quantity -->
+                <div class="form-group">
+                  <label for="productQuantity" class="form-label">
+                    <i class="bi bi-boxes"></i>
+                    Stock Quantity *
+                  </label>
+                  <input
+                    type="number"
+                    id="productQuantity"
+                    name="productQuantity"
+                    [(ngModel)]="productData.quantity"
+                    class="form-control modern-input"
+                    placeholder="0"
+                    min="0"
+                    required
+                    #productQuantity="ngModel"
+                  >
+                  <div *ngIf="productQuantity.invalid && productQuantity.touched" class="error-message">
+                    <small *ngIf="productQuantity.errors?.['required']">Quantity is required</small>
+                    <small *ngIf="productQuantity.errors?.['min']">Quantity cannot be negative</small>
+                  </div>
+                </div>
+
+                <!-- Product Category -->
+                <div class="form-group">
+                  <label for="productCategory" class="form-label">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    Category
+                  </label>
+                  <select
+                    id="productCategory"
+                    name="productCategory"
+                    [(ngModel)]="productData.category"
+                    class="form-select modern-input"
+                  >
+                    <option value="">Select a category</option>
+                    <option value="furniture">Furniture</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="home-decor">Home Decor</option>
+                    <option value="sports">Sports & Outdoors</option>
+                    <option value="books">Books</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <!-- Product Description -->
+                <div class="form-group full-width">
+                  <label for="productDescription" class="form-label">
+                    <i class="bi bi-text-paragraph"></i>
+                    Description
+                  </label>
+                  <textarea
+                    id="productDescription"
+                    name="productDescription"
+                    [(ngModel)]="productData.description"
+                    class="form-control modern-input"
+                    rows="4"
+                    placeholder="Enter product description..."
+                  ></textarea>
+                  <small class="form-text">Provide a detailed description of the product</small>
+                </div>
+
+                <!-- Product Features -->
+                <div class="form-group full-width">
+                  <label class="form-label">
+                    <i class="bi bi-check-circle"></i>
+                    Key Features
+                  </label>
+                  <div class="features-input">
+                    <div *ngFor="let feature of productData.features; let i = index" class="feature-item">
+                      <input
+                        type="text"
+                        [(ngModel)]="productData.features[i]"
+                        [name]="'feature' + i"
+                        class="form-control modern-input"
+                        placeholder="Enter a key feature"
+                      >
+                      <button type="button" (click)="removeFeature(i)" class="remove-feature-btn">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </div>
+                    <button type="button" (click)="addFeature()" class="add-feature-btn">
+                      <i class="bi bi-plus-lg"></i>
+                      Add Feature
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <div class="actions-left">
+            <button type="button" [routerLink]="['/products']" class="btn btn-outline-secondary cancel-btn">
+              <i class="bi bi-x-circle"></i>
+              Cancel
+            </button>
+          </div>
+
+          <div class="actions-right">
+            <button type="button" (click)="resetForm()" class="btn btn-outline-primary reset-btn">
+              <i class="bi bi-arrow-clockwise"></i>
+              Reset
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary submit-btn"
+              [disabled]="productForm.invalid || isSubmitting"
+            >
+              <span *ngIf="isSubmitting" class="loading-spinner"></span>
+              <i *ngIf="!isSubmitting" [class]="isEditMode ? 'bi bi-check-circle' : 'bi bi-plus-circle'"></i>
+              <span *ngIf="!isSubmitting">{{ isEditMode ? 'Update Product' : 'Create Product' }}</span>
+              <span *ngIf="isSubmitting">{{ isEditMode ? 'Updating...' : 'Creating...' }}</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="help-card">
+            <div class="help-icon">
+              <i class="bi bi-lightbulb"></i>
+            </div>
+            <h4>Product Tips</h4>
+            <p>Use clear, descriptive names and high-quality images to attract customers.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="help-card">
+            <div class="help-icon">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <h4>Pricing Strategy</h4>
+            <p>Research competitor prices and consider your costs when setting product prices.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="help-card">
+            <div class="help-icon">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <h4>Quality Assurance</h4>
+            <p>Ensure accurate stock quantities and detailed descriptions for better customer experience.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

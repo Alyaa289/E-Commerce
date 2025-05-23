@@ -1,0 +1,239 @@
+<div class="products-container">
+  <div class="container">
+    <!-- Header Section -->
+    <div class="products-header">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1 class="page-title">
+            <i class="bi bi-grid-3x3-gap-fill title-icon"></i>
+            Our Products
+          </h1>
+          <p class="page-subtitle">Discover our premium collection of quality products</p>
+        </div>
+        <div class="col-lg-6 text-lg-end">
+          <button [routerLink]="['/products/0/edit']" class="btn btn-primary add-product-btn">
+            <i class="bi bi-plus-circle-fill"></i>
+            Add New Product
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="products-controls">
+      <div class="row align-items-center">
+        <div class="col-lg-6 col-md-8">
+          <div class="search-container">
+            <i class="bi bi-search search-icon"></i>
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              (input)="onSearch()"
+              placeholder="Search products by name..."
+              class="form-control search-input"
+            />
+            <button *ngIf="searchTerm" (click)="clearSearch()" class="clear-search">
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-4">
+          <div class="controls-right">
+            <div class="sort-container">
+              <select [(ngModel)]="sortBy" (change)="onSort()" class="form-select sort-select">
+                <option value="">Sort by...</option>
+                <option value="name">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="price">Price (Low to High)</option>
+                <option value="price-desc">Price (High to Low)</option>
+              </select>
+            </div>
+            <div class="view-toggle">
+              <button
+                [class.active]="viewMode === 'grid'"
+                (click)="setViewMode('grid')"
+                class="view-btn"
+                title="Grid View"
+              >
+                <i class="bi bi-grid-3x3-gap"></i>
+              </button>
+              <button
+                [class.active]="viewMode === 'list'"
+                (click)="setViewMode('list')"
+                class="view-btn"
+                title="List View"
+              >
+                <i class="bi bi-list-ul"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Grid/List -->
+    <div class="products-content">
+      <div *ngIf="filteredProducts.length === 0 && searchTerm" class="no-results">
+        <div class="no-results-content">
+          <i class="bi bi-search no-results-icon"></i>
+          <h3>No products found</h3>
+          <p>Try adjusting your search terms or <button (click)="clearSearch()" class="btn-link">clear the search</button></p>
+        </div>
+      </div>
+
+      <div *ngIf="filteredProducts.length === 0 && !searchTerm" class="empty-state">
+        <div class="empty-state-content">
+          <i class="bi bi-box-seam empty-state-icon"></i>
+          <h3>No products yet</h3>
+          <p>Start building your inventory by adding your first product</p>
+          <button [routerLink]="['/products/0/edit']" class="btn btn-primary">
+            <i class="bi bi-plus-circle-fill"></i>
+            Add First Product
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid View -->
+      <div *ngIf="viewMode === 'grid' && filteredProducts.length > 0" class="products-grid">
+        <div class="row">
+          <div *ngFor="let product of filteredProducts" class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-4">
+            <div class="product-card">
+              <div class="product-image">
+                <img [src]="product.img" [alt]="product.name" class="card-img">
+                <div class="product-overlay">
+                  <button [routerLink]="['/products', product.id]" class="btn btn-light btn-sm overlay-btn">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button [routerLink]="['/products', product.id, 'edit']" class="btn btn-primary btn-sm overlay-btn">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button (click)="deleteProduct(product.id)" class="btn btn-danger btn-sm overlay-btn">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+                <div class="product-badge" *ngIf="product.quantity === 0">
+                  Out of Stock
+                </div>
+              </div>
+              <div class="product-info">
+                <h5 class="product-name">{{ product.name }}</h5>
+                <div class="product-price">${{ product.price }}</div>
+                <div class="product-quantity">
+                  <span class="quantity-label">Stock:</span>
+                  <span [class]="product.quantity === 0 ? 'quantity-out' : 'quantity-in'">
+                    {{ product.quantity }} units
+                  </span>
+                </div>
+                <div class="product-actions">
+                  <button [routerLink]="['/products', product.id]" class="btn btn-outline-primary btn-sm">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- List View -->
+      <div *ngIf="viewMode === 'list' && filteredProducts.length > 0" class="products-list">
+        <div class="list-header">
+          <div class="row">
+            <div class="col-md-4">Product</div>
+            <div class="col-md-2">Price</div>
+            <div class="col-md-2">Stock</div>
+            <div class="col-md-2">Status</div>
+            <div class="col-md-2">Actions</div>
+          </div>
+        </div>
+        <div *ngFor="let product of filteredProducts" class="list-item">
+          <div class="row align-items-center">
+            <div class="col-md-4">
+              <div class="product-info-list">
+                <img [src]="product.img" [alt]="product.name" class="list-img">
+                <div class="product-details">
+                  <h6 class="product-name-list">{{ product.name }}</h6>
+                  <small class="product-id">ID: {{ product.id }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <span class="product-price-list">${{ product.price }}</span>
+            </div>
+            <div class="col-md-2">
+              <span class="product-quantity-list">{{ product.quantity }} units</span>
+            </div>
+            <div class="col-md-2">
+              <span [class]="product.quantity === 0 ? 'status-badge out-of-stock' : 'status-badge in-stock'">
+                {{ product.quantity === 0 ? 'Out of Stock' : 'In Stock' }}
+              </span>
+            </div>
+            <div class="col-md-2">
+              <div class="action-buttons">
+                <button [routerLink]="['/products', product.id]" class="btn btn-sm btn-outline-primary" title="View">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button [routerLink]="['/products', product.id, 'edit']" class="btn btn-sm btn-outline-secondary" title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button (click)="deleteProduct(product.id)" class="btn btn-sm btn-outline-danger" title="Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Stats -->
+    <div class="products-stats" *ngIf="filteredProducts.length > 0">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-number">{{ getTotalProducts() }}</div>
+              <div class="stat-label">Total Products</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-number">{{ getInStockProducts() }}</div>
+              <div class="stat-label">In Stock</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="bi bi-x-circle"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-number">{{ getOutOfStockProducts() }}</div>
+              <div class="stat-label">Out of Stock</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-number">${{ getTotalValue() }}</div>
+              <div class="stat-label">Total Value</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,197 @@
+<div class="auth-container">
+  <div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+      <div class="col-lg-6 col-md-8 col-sm-10">
+        <div class="auth-card">
+          <div class="auth-header">
+            <div class="auth-logo">
+              <i class="bi bi-person-plus-fill auth-icon"></i>
+            </div>
+            <h2 class="auth-title">Create Account</h2>
+            <p class="auth-subtitle">Join Alyaa Store and discover premium products</p>
+          </div>
+
+          <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="auth-form">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="firstName" class="form-label">
+                    <i class="bi bi-person-fill"></i>
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    [(ngModel)]="registerData.firstName"
+                    class="form-control auth-input"
+                    placeholder="Enter first name"
+                    required
+                    #firstName="ngModel"
+                  />
+                  <div *ngIf="firstName.invalid && firstName.touched" class="error-message">
+                    <small>First name is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="lastName" class="form-label">
+                    <i class="bi bi-person-fill"></i>
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    [(ngModel)]="registerData.lastName"
+                    class="form-control auth-input"
+                    placeholder="Enter last name"
+                    required
+                    #lastName="ngModel"
+                  />
+                  <div *ngIf="lastName.invalid && lastName.touched" class="error-message">
+                    <small>Last name is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email" class="form-label">
+                <i class="bi bi-envelope-fill"></i>
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                [(ngModel)]="registerData.email"
+                class="form-control auth-input"
+                placeholder="Enter your email"
+                required
+                email
+                #email="ngModel"
+              />
+              <div *ngIf="email.invalid && email.touched" class="error-message">
+                <small *ngIf="email.errors?.['required']">Email is required</small>
+                <small *ngIf="email.errors?.['email']">Please enter a valid email</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password" class="form-label">
+                <i class="bi bi-lock-fill"></i>
+                Password
+              </label>
+              <div class="password-input-container">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  id="password"
+                  name="password"
+                  [(ngModel)]="registerData.password"
+                  class="form-control auth-input"
+                  placeholder="Create a password"
+                  required
+                  minlength="8"
+                  #password="ngModel"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="togglePasswordVisibility()"
+                >
+                  <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                </button>
+              </div>
+              <div *ngIf="password.invalid && password.touched" class="error-message">
+                <small *ngIf="password.errors?.['required']">Password is required</small>
+                <small *ngIf="password.errors?.['minlength']">Password must be at least 8 characters</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword" class="form-label">
+                <i class="bi bi-lock-fill"></i>
+                Confirm Password
+              </label>
+              <div class="password-input-container">
+                <input
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  [(ngModel)]="registerData.confirmPassword"
+                  class="form-control auth-input"
+                  [class.is-invalid]="!passwordsMatch() && registerData.confirmPassword.length > 0"
+                  placeholder="Confirm your password"
+                  required
+                  #confirmPassword="ngModel"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="toggleConfirmPasswordVisibility()"
+                >
+                  <i [class]="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                </button>
+              </div>
+              <div *ngIf="!passwordsMatch() && registerData.confirmPassword.length > 0" class="error-message">
+                <small>Passwords do not match</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="terms-agreement">
+                <input 
+                  type="checkbox" 
+                  id="terms" 
+                  [(ngModel)]="agreeToTerms"
+                  name="terms"
+                  class="form-check-input"
+                  required
+                >
+                <label for="terms" class="form-check-label">
+                  I agree to the <a href="#" class="link-primary">Terms of Service</a> and 
+                  <a href="#" class="link-primary">Privacy Policy</a>
+                </label>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="btn auth-btn"
+              [disabled]="registerForm.invalid || !passwordsMatch() || !agreeToTerms || isLoading"
+            >
+              <span *ngIf="isLoading" class="loading-spinner"></span>
+              <span *ngIf="!isLoading">Create Account</span>
+              <span *ngIf="isLoading">Creating Account...</span>
+            </button>
+          </form>
+
+          <div class="auth-footer">
+            <p class="signin-link">
+              Already have an account?
+              <a [routerLink]="['/login']" class="link-primary">Sign In</a>
+            </p>
+          </div>
+
+          <div class="social-login">
+            <div class="divider">
+              <span>Or sign up with</span>
+            </div>
+            <div class="social-buttons">
+              <button class="social-btn google-btn">
+                <i class="bi bi-google"></i>
+                Google
+              </button>
+              <button class="social-btn facebook-btn">
+                <i class="bi bi-facebook"></i>
+                Facebook
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
